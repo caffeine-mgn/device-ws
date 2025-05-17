@@ -46,6 +46,7 @@ class DeviceControlWsController : HttpHandler {
                 deviceId = deviceId,
                 deviceName = deviceName,
                 connection = client,
+                messageContentType = deviceMessageContentType,
             )
         } finally {
             client.asyncCloseAnyway()
