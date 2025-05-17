@@ -6,6 +6,7 @@ kotlinx-coroutines = "1.10.2"
 telegram = "1.0.0-SNAPSHOT"
 android = "8.9.2"
 compose-plugin = "1.8.0"
+binom-publish = "0.1.24"
 
 [libraries]
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
@@ -42,3 +43,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+binom-publish = { id = "pw.binom.publish", version.ref = "binom-publish" }
