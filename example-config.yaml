@@ -1,0 +1,10 @@
+strong:
+  nats:
+    client:
+      host: nats-host.xx
+  server:
+    port: 8080
+  management:
+    port: 9090
+app:
+  deviceSecret: SuperStrongSecret
