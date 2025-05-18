@@ -54,46 +54,45 @@ docker {
         }
     }
 }
+val jvmJar = tasks.getting(Jar::class)
 
-tasks {
-
-    val jvmJar by getting(Jar::class)
-
-    val shadowJar by register("shadowJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class) {
-        from(jvmJar.archiveFile)
-        group = "build"
-        configurations = listOf(project.configurations["jvmRuntimeClasspath"])
-        exclude(
-            "META-INF/*.SF",
-            "META-INF/*.DSA",
-            "META-INF/*.RSA",
-            "META-INF/*.txt",
-            "META-INF/NOTICE",
-            "LICENSE",
-        )
-        manifest {
-            attributes("Main-Class" to "pw.binom.JvmMain")
-        }
-        archiveFileName.set("full-application.jar")
+val shadowJar by tasks.register("shadowJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class) {
+    from(jvmJar.archiveFile)
+    group = "build"
+    configurations = listOf(project.configurations["jvmRuntimeClasspath"])
+    exclude(
+        "META-INF/*.SF",
+        "META-INF/*.DSA",
+        "META-INF/*.RSA",
+        "META-INF/*.txt",
+        "META-INF/NOTICE",
+        "LICENSE",
+    )
+    manifest {
+        attributes("Main-Class" to "pw.binom.JvmMain")
     }
+    archiveFileName.set("full-application.jar")
+}
 
-    val buildImage by register("buildDockerImage", DockerBuildImage::class) {
-        group = "docker"
-        dependsOn(shadowJar)
-        inputDir.set(projectDir)
-        images.add(dockerImage)
-        applyUrl()
-        buildArgs.put("--output", "type=oci,name=$dockerImage")
-        doFirst {
-            dockerImage ?: throw IllegalArgumentException("DOCKER_IMAGE_NAME is not set")
-        }
+val buildImage by tasks.register("buildDockerImage", DockerBuildImage::class) {
+    group = "docker"
+    dependsOn(shadowJar)
+    inputDir.set(projectDir)
+    images.add(dockerImage)
+    applyUrl()
+    buildArgs.put("--output", "type=oci,name=$dockerImage")
+    doFirst {
+        dockerImage ?: throw IllegalArgumentException("DOCKER_IMAGE_NAME is not set")
+        println("Image name: \"$dockerImage\"")
     }
-    register("pushDockerImage", DockerPushImage::class) {
-        group = "docker"
-        applyUrl()
-        dependsOn(buildImage)
-        images.addAll(buildImage.images)
-    }
+}
+
+tasks.register("pushDockerImage", DockerPushImage::class) {
+    group = "docker"
+    applyUrl()
+    dependsOn(buildImage)
+    images.addAll(buildImage.images)
+//        buildImage.images
 }
 
 fun AbstractDockerRemoteApiTask.applyUrl() {
