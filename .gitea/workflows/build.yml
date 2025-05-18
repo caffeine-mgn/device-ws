@@ -18,26 +18,31 @@ jobs:
       #          key: '${{ runner.os }}-gradle'
       - name: 'Checkout'
         uses: https://github.com/actions/checkout@v4
-      - name: 'Install Helm'
-        uses: azure/setup-helm@v3
-      - name: Setup Jvm
-        uses: actions/setup-java@v1
+      - name: building
+        uses: https://git.binom.pw/subochev/devops/gradle-build.yaml@main
         with:
-          java-version: 21
-          distribution: 'adopt'
+          image_name: "device/ws"
+#      - name: 'Install Helm'
+#        uses: azure/setup-helm@v3
+#      - name: Setup Jvm
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 21
+#          distribution: 'adopt'
 #      - name: update helm yandex version
 #        run: |
 #          sed -i -e 's/%VERSION%/${{ gitea.ref_name }}/g' helm/yandex/Chart.yaml
 #          cat helm/yandex/Chart.yaml
-      - name: "Building"
-        env:
-          HELM_REPOSITORY: ${{ vars.HELM_REPOSITORY }}
-          DOCKER_REGISTRY_USERNAME: ${{ vars.DOCKER_REGISTRY_USERNAME }}
-          DOCKER_REGISTRY_PASSWORD: ${{ vars.DOCKER_REGISTRY_PASSWORD }}
-          DOCKER_IMAGE_NAME: ${{ vars.DOCKER_REGISTRY_HOST  }}/device/ws:${{ gitea.ref_name }}
-          DOCKER_REGISTRY_HOST: ${{ vars.DOCKER_REGISTRY_HOST  }}
-          DOCKER_HOST: unix:///run/podman/podman.sock
-        run: './gradlew -Pversion=${{ gitea.ref_name }} pushDockerImage -Dorg.gradle.jvmargs=-Xmx4096M --parallel --no-daemon --no-watch-fs --stacktrace'
+#      - name: "Building"
+#        env:
+#          HELM_REPOSITORY: ${{ vars.HELM_REPOSITORY }}
+#          DOCKER_REGISTRY_USERNAME: ${{ vars.DOCKER_REGISTRY_USERNAME }}
+#          DOCKER_REGISTRY_PASSWORD: ${{ vars.DOCKER_REGISTRY_PASSWORD }}
+#          DOCKER_IMAGE_NAME: ${{ vars.DOCKER_REGISTRY_HOST  }}/device/ws:${{ gitea.ref_name }}
+#          DOCKER_REGISTRY_HOST: ${{ vars.DOCKER_REGISTRY_HOST  }}
+#          DOCKER_HOST: unix:///run/podman/podman.sock
+#        run: './gradlew -Pversion=${{ gitea.ref_name }} pushDockerImage -Dorg.gradle.jvmargs=-Xmx4096M --parallel --no-daemon --no-watch-fs --stacktrace'
+
       #      - name: 'Cache Save'
       #        id: cache-primes-save
       #        uses: actions/cache/save@v3
