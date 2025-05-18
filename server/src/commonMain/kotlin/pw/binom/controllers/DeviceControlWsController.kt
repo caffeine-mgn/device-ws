@@ -10,11 +10,12 @@ import pw.binom.logger.info
 import pw.binom.properties.ApplicationProperties
 import pw.binom.services.DevicesControlService
 import pw.binom.strong.inject
+import pw.binom.strong.properties.injectProperty
 
 class DeviceControlWsController : HttpHandler {
     private val devicesControlService: DevicesControlService by inject()
     private val logger by Logger.ofThisOrGlobal
-    private val applicationProperties by inject<ApplicationProperties>()
+    private val applicationProperties by injectProperty<ApplicationProperties>()
     private fun missingHeader(headerName: String): Nothing = illegalArgument { "Missing header \"$headerName\"" }
     override suspend fun handle(exchange: HttpServerExchange) {
         logger.info("Income request ${exchange.requestMethod} ${exchange.requestURI}")
