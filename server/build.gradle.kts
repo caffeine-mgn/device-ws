@@ -1,3 +1,4 @@
+import com.bmuschko.gradle.docker.tasks.AbstractDockerRemoteApiTask
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 
@@ -81,6 +82,7 @@ tasks {
         dependsOn(shadowJar)
         inputDir.set(projectDir)
         images.add(dockerImage)
+        applyUrl()
         buildArgs.put("--output", "type=oci,name=$dockerImage")
         doFirst {
             dockerImage ?: throw IllegalArgumentException("DOCKER_IMAGE_NAME is not set")
@@ -88,7 +90,15 @@ tasks {
     }
     register("pushDockerImage", DockerPushImage::class) {
         group = "docker"
+        applyUrl()
         dependsOn(buildImage)
         images.addAll(buildImage.images)
+    }
+}
+
+fun AbstractDockerRemoteApiTask.applyUrl() {
+    val host = System.getenv("DOCKER_HOST")
+    if (host != null) {
+        url.set(host)
     }
 }
