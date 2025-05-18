@@ -54,7 +54,7 @@ docker {
         }
     }
 }
-val jvmJar = tasks.getting(Jar::class)
+val jvmJar by tasks.getting(Jar::class)
 
 val shadowJar by tasks.register("shadowJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class) {
     from(jvmJar.archiveFile)
@@ -78,9 +78,11 @@ val buildImage by tasks.register("buildDockerImage", DockerBuildImage::class) {
     group = "docker"
     dependsOn(shadowJar)
     inputDir.set(projectDir)
-    images.add(dockerImage)
+    if (dockerImage != null) {
+        images.add(dockerImage)
+        buildArgs.put("--output", "type=oci,name=$dockerImage")
+    }
     applyUrl()
-    buildArgs.put("--output", "type=oci,name=$dockerImage")
     doFirst {
         dockerImage ?: throw IllegalArgumentException("DOCKER_IMAGE_NAME is not set")
         println("Image name: \"$dockerImage\"")
