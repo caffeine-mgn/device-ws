@@ -37,7 +37,7 @@ kotlin {
         }
     }
 }
-val dockerImage = System.getenv("DOCKER_IMAGE_NAME") ?: throw IllegalArgumentException("DOCKER_IMAGE_NAME is not set")
+val dockerImage = System.getenv("DOCKER_IMAGE_NAME")
 val dockerLogin = System.getenv("DOCKER_REGISTRY_USERNAME")
 val dockerPassword = System.getenv("DOCKER_REGISTRY_PASSWORD")
 val dockerHost = System.getenv("DOCKER_REGISTRY_HOST")
@@ -81,6 +81,10 @@ tasks {
         dependsOn(shadowJar)
         inputDir.set(projectDir)
         images.add(dockerImage)
+        buildArgs.put("--output", "type=oci,name=$dockerImage")
+        doFirst {
+            dockerImage ?: throw IllegalArgumentException("DOCKER_IMAGE_NAME is not set")
+        }
     }
     register("pushDockerImage", DockerPushImage::class) {
         group = "docker"
