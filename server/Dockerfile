@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjre-alpine:24.0.1-11-x86_64
+FROM bellsoft/liberica-openjdk-alpine:21.0.6-10
 COPY build/libs/full-application.jar /app.jar
 
 ENV J_XMX "2048m"
