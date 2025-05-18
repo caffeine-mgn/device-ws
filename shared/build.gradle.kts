@@ -1,3 +1,5 @@
+import pw.binom.publish.allTargets
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
@@ -6,8 +8,10 @@ plugins {
 }
 
 kotlin {
-    jvm()
-    js()
+    allTargets{
+        -"wasmJs"
+    }
+    wasmJs()
     sourceSets {
         commonMain.dependencies {
             api(libs.kotlinx.serialization.core)

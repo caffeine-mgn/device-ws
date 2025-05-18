@@ -20,6 +20,7 @@ import pw.binom.strong.properties.StrongProperties
 import pw.binom.strong.properties.yaml.addYaml
 import pw.binom.strong.web.server.WebConfig
 import pw.binom.strong.web.server.properties.WebServerProperties
+import kotlin.jvm.JvmName
 
 fun main(args: Array<String>) {
     val properties = StrongProperties()

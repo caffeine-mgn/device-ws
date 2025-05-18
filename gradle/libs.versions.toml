@@ -44,3 +44,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 binom-publish = { id = "pw.binom.publish", version.ref = "binom-publish" }
+bmuschko-docker = { id = "com.bmuschko.docker-remote-api", version = "9.4.0"}
