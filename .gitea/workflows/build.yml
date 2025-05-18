@@ -19,7 +19,7 @@ jobs:
       - name: 'Checkout'
         uses: https://github.com/actions/checkout@v4
       - name: building
-        uses: https://git.binom.pw/subochev/devops/.gitea/workflows/gradle-build.yaml@main
+        uses: https://git.binom.pw/subochev/devops/deploy@main
         with:
           image_name: "device/ws"
 #      - name: 'Install Helm'
