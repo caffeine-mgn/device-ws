@@ -11,15 +11,13 @@ import pw.binom.io.file.takeIfFile
 import pw.binom.io.file.workDirectoryFile
 import pw.binom.io.use
 import pw.binom.network.MultiFixedSizeThreadNetworkDispatcher
-import pw.binom.properties.ini.addIni
-import pw.binom.strong.nats.client.NatsClientConfig
 import pw.binom.signal.Signal
 import pw.binom.strong.Strong
 import pw.binom.strong.bean
+import pw.binom.strong.nats.client.NatsClientConfig
 import pw.binom.strong.properties.StrongProperties
 import pw.binom.strong.properties.yaml.addYaml
 import pw.binom.strong.web.server.WebConfig
-import pw.binom.strong.web.server.properties.WebServerProperties
 import kotlin.jvm.JvmName
 
 fun main(args: Array<String>) {
