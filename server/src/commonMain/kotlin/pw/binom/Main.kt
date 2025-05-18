@@ -2,6 +2,7 @@
 
 package pw.binom
 
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -20,6 +21,7 @@ import pw.binom.strong.properties.yaml.addYaml
 import pw.binom.strong.web.server.WebConfig
 import kotlin.jvm.JvmName
 
+@OptIn(DelicateCoroutinesApi::class)
 fun main(args: Array<String>) {
     val properties = StrongProperties()
         .addEnvironment(prefix = "")
