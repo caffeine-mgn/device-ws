@@ -36,6 +36,7 @@ jobs:
           DOCKER_REGISTRY_PASSWORD: ${{ vars.DOCKER_REGISTRY_PASSWORD }}
           DOCKER_IMAGE_NAME: ${{ vars.DOCKER_REGISTRY_HOST  }}/device/ws
           DOCKER_REGISTRY_HOST: ${{ vars.DOCKER_REGISTRY_HOST  }}
+          DOCKER_HOST: unix:///run/podman/podman.sock
         run: './gradlew -Pversion=${{ gitea.ref_name }} pushDockerImage -Dorg.gradle.jvmargs=-Xmx4096M --parallel --no-daemon --no-watch-fs --stacktrace'
       #      - name: 'Cache Save'
       #        id: cache-primes-save
