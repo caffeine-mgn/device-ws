@@ -19,7 +19,7 @@ jobs:
       - name: 'Checkout'
         uses: https://github.com/actions/checkout@v4
       - name: building
-        uses: https://git.binom.pw/subochev/devops/gradle-build.yaml@main
+        uses: subochev/devops/gradle-build.yaml@main
         with:
           image_name: "device/ws"
 #      - name: 'Install Helm'
