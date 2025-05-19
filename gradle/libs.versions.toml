@@ -22,6 +22,7 @@ binom-telegram = { module = "pw.binom:telegramClient", version.ref = "telegram" 
 binom-io-strong-webServer = { module = "pw.binom.io:strong-web-server", version.ref = "binom-io" }
 binom-io-strong-properties-yaml = { module = "pw.binom.io:strong-properties-yaml", version.ref = "binom-io" }
 binom-io-strong-properties-ini = { module = "pw.binom.io:strong-properties-ini", version.ref = "binom-io" }
+binom-io-strong-application = { module = "pw.binom.io:strong-application", version.ref = "binom-io" }
 binom-io-strong-nats-client = { module = "pw.binom.io:strong-nats-client", version.ref = "binom-io" }
 binom-io-signal = { module = "pw.binom.io:signal", version.ref = "binom-io" }
 binom-io-logger = { module = "pw.binom.io:logger", version.ref = "binom-io" }
