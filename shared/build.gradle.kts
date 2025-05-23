@@ -25,7 +25,7 @@ kotlin {
 publishing {
     publications {
         filterIsInstance<MavenPublication>().forEach {
-            it.artifactId = "device-ws"
+            it.artifactId = "shared"
         }
     }
 }
