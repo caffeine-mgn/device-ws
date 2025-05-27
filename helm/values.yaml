@@ -1,0 +1,21 @@
+replicaCount: 1
+autoscaling:
+  enabled: false
+labels: [ ]
+metrics: true
+managementPort: 9090
+port: 8080
+imagePullSecrets: null
+image:
+  name: null
+  pullPolicy: IfNotPresent
+name: device-ws
+ingress:
+  host: '{{$.Values.name}}.{{$.Release.Namespace}}.com'
+nats:
+  server:
+    host: null
+deviceSecret: null
+topicPrefix: null
+pingInterval: "30000"
+pingTimeout: "10000"

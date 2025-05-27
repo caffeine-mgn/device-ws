@@ -18,7 +18,8 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Device-Nats"
 //include(":app")
-include(":shared")
+include(":device-shared")
+include(":server-shared")
 //include(":deviceClient")
 include(":server")
 //include(":deviceShared")

@@ -22,14 +22,6 @@ kotlin {
     }
 }
 
-publishing {
-    publications {
-        filterIsInstance<MavenPublication>().forEach {
-            it.artifactId = "shared"
-        }
-    }
-}
-
 extensions.getByType(pw.binom.publish.plugins.PublicationPomInfoExtension::class).apply {
     useApache2License()
     gitScm("https://github.com/caffeine-mgn/telegramClient")

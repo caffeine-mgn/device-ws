@@ -8,6 +8,7 @@ import pw.binom.logger.Logger
 import pw.binom.logger.info
 import pw.binom.mq.nats.NatsMqConnection
 import pw.binom.network.NetworkManager
+import pw.binom.properties.ApplicationProperties
 import pw.binom.strong.inject
 
 class DevicesControlService {
@@ -16,7 +17,9 @@ class DevicesControlService {
     private val lock = ReentrantLock()
     private val logger by Logger.ofThisOrGlobal
     private val networkManager: NetworkManager by inject()
+    private val deviceStatusEmitterService: DeviceStatusEmitterService by inject()
     private val nats: NatsMqConnection by inject()
+    private val applicationProperties: ApplicationProperties by inject()
 
     val devices: List<DeviceControl>
         get() = lock.synchronize {
@@ -34,21 +37,26 @@ class DevicesControlService {
         messageContentType: String,
     ) {
         logger.info("Connected $deviceId:$deviceName")
-        val glasses = DeviceControl(
+        val deviceControl = DeviceControl(
             id = deviceId,
             name = deviceName,
             connection = connection,
             networkManager = networkManager,
             nats = nats,
             messageContentType = messageContentType,
+            topicPrefix = applicationProperties.topicPrefix,
+            pingInterval = applicationProperties.pingInterval,
+            pingTimeout = applicationProperties.pingTimeout,
         )
         lock.synchronize {
-            connections[connection] = glasses
-            connectionsById[deviceId] = glasses
+            connections[connection] = deviceControl
+            connectionsById[deviceId] = deviceControl
         }
         try {
-            glasses.processing()
+            deviceStatusEmitterService.deviceOnline(deviceControl)
+            deviceControl.processing()
         } finally {
+            deviceStatusEmitterService.deviceOffline(deviceControl)
             logger.info("Disconnected $deviceId:$deviceName")
             lock.synchronize {
                 connections.remove(connection)

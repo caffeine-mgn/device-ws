@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{$.Release.Name}}-{{$.Chart.Name}}-main-config
+data:
+  application.yaml: |
+    strong:
+      nats:
+        client:
+          lazyStart: false
+          host: {{$.Values.nats.server.host}}
+      server:
+        port: {{ $.Values.port }}
+      management:
+        port: {{$.Values.managementPort}}
+    app:
+      deviceSecret: "{{$.Values.deviceSecret}}"
+      topicPrefix: "{{$.Values.topicPrefix}}"
+      pingInterval: {{$.Values.pingInterval}}
+      pingTimeout: {{$.Values.pingTimeout}}

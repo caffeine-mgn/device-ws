@@ -27,12 +27,14 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":shared"))
+            implementation(project(":device-shared"))
+            implementation(project(":server-shared"))
 //            implementation(project(":deviceShared"))
             implementation(libs.binom.io.strong.webServer)
             implementation(libs.binom.io.strong.properties.ini)
             implementation(libs.binom.io.strong.properties.yaml)
             implementation(libs.binom.io.strong.application)
+            implementation(libs.binom.io.strong.serialization)
             implementation(libs.binom.io.strong.nats.client)
             implementation(libs.binom.io.signal)
             implementation(libs.kotlinx.serialization.json)

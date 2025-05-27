@@ -1,0 +1,11 @@
+apiVersion: v2
+name: device-ws
+description: Bridge between Internet and NATS
+home: https://tlsys.ru/
+icon: https://lk.tlsys.org/favicon.png
+keywords:
+  - device
+  - nats
+type: application
+version: "9.9.9"
+appVersion: "9.9.9"

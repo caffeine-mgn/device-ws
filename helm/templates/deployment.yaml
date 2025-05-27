@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{$.Release.Name}}-{{$.Values.name}}"
+  labels:
+    {{- if $.Values.labels}}
+    {{- toYaml $.Values.labels | nindent 4 }}
+    {{- end}}
+    app.kubernetes.io/name: {{$.Values.name}}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/version: {{ $.Chart.AppVersion | quote }}
+spec:
+  {{- if not $.Values.autoscaling.enabled }}
+  {{ if $.Values.replicaCount }}
+  replicas: {{ $.Values.replicaCount }}
+  {{ else }}
+  replicas: 1
+  {{end}}
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{$.Values.name}}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      annotations:
+        metric.binom.pw/enabled: '{{$.Values.metrics}}'
+        {{ if ($.Values.metrics) }}
+        metric.binom.pw/url: ":9090/prometheus"
+        {{ end }}
+      {{- with $.Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: telegram-nats
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+{{/*        app.kubernetes.io/version: {{ $.Chart.AppVersion | quote }}*/}}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: application-properties-volume
+          configMap:
+            name: {{$.Release.Name}}-{{$.Chart.Name}}-main-config
+            items:
+              - key: application.yaml
+                path: application.yaml
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ $.Chart.Name }}
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          image: "{{ $.Values.image.name }}:{{ default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          env:
+            - name: RELEASE_NAME
+              value: {{$.Release.Name}}
+            - name: STRONG_CONFIG_YAML
+              value: /config/application.yaml
+          volumeMounts:
+            - mountPath: '/config'
+              name: application-properties-volume
+          ports:
+            - name: http
+              containerPort: {{ $.Values.port }}
+              protocol: TCP
+            - name: management
+              containerPort: {{ $.Values.managementPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: management
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: '/health/readiness'
+              port: management
+            initialDelaySeconds: 25
+            periodSeconds: 10
+          {{- if $.Values.resources}}
+          resources:
+            {{- toYaml $.Values.resources | nindent 12}}
+          {{- else}}
+          resources: { }
+          {{end}}
+      {{- with $.Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
