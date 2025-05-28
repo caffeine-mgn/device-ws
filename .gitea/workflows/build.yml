@@ -18,3 +18,9 @@ jobs:
         uses: https://git.binom.pw/subochev/devops/publish@main
         with:
           version: ${{ gitea.ref_name }}
+      - name: Publishing Helm
+        uses: https://git.binom.pw/subochev/devops/helm-publish@main
+        with:
+          chart_directory: "helm"
+          helm_version: ${{ gitea.ref_name }}
+          helm_version_placeholder: '9.9.9'
