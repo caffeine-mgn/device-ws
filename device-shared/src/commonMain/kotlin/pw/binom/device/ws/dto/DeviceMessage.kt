@@ -1,11 +1,13 @@
 package pw.binom.device.ws.dto
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 /**
  * Устройство шлёт серверу
  */
 @Serializable
+@JsonClassDiscriminator("type")
 sealed interface DeviceMessage {
     /**
      * Ответ на RPC
