@@ -32,7 +32,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        app.kubernetes.io/name: telegram-nats
+        app.kubernetes.io/name: {{$.Values.name}}
         app.kubernetes.io/instance: {{ $.Release.Name }}
 {{/*        app.kubernetes.io/version: {{ $.Chart.AppVersion | quote }}*/}}
     spec:
