@@ -10,6 +10,7 @@ import pw.binom.mq.nats.NatsMqConnection
 import pw.binom.network.NetworkManager
 import pw.binom.properties.ApplicationProperties
 import pw.binom.strong.inject
+import pw.binom.strong.properties.injectProperty
 
 class DevicesControlService {
     private val connections = HashMap<WebSocketConnection, DeviceControl>()
@@ -19,7 +20,7 @@ class DevicesControlService {
     private val networkManager: NetworkManager by inject()
     private val deviceStatusEmitterService: DeviceStatusEmitterService by inject()
     private val nats: NatsMqConnection by inject()
-    private val applicationProperties: ApplicationProperties by inject()
+    private val applicationProperties: ApplicationProperties by injectProperty()
 
     val devices: List<DeviceControl>
         get() = lock.synchronize {
