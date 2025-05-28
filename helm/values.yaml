@@ -16,6 +16,6 @@ nats:
   server:
     host: null
 deviceSecret: null
-topicPrefix: null
-pingInterval: "30000"
-pingTimeout: "10000"
+topicPrefix: "device"
+pingInterval: "PT30S"
+pingTimeout: "PT10S"

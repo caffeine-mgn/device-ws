@@ -38,8 +38,8 @@ class DeviceControl(
     private val nats: NatsMqConnection,
     private val messageContentType: String,
     private val topicPrefix: String,
-    private val pingInterval: Long,
-    private val pingTimeout: Long,
+    private val pingInterval: Duration,
+    private val pingTimeout: Duration,
 ) {
     private val logger = Logger.getLogger("Device $id")
     private var functions = emptyMap<String, String>()
@@ -82,15 +82,15 @@ class DeviceControl(
 
     suspend fun processing() {
         sender.start(networkManager)
-        if (pingInterval > 0) {
+        if (pingInterval.isPositive()) {
             networkManager.launch {
                 while (isActive) {
-                    ping = withTimeoutOrNull(pingTimeout.milliseconds) {
+                    ping = withTimeoutOrNull(pingTimeout) {
                         measureTime {
                             ping()
                         }
                     }
-                    delay(pingInterval.milliseconds)
+                    delay(pingInterval)
                 }
             }
         }
