@@ -108,7 +108,7 @@ class DeviceControl(
                         input.readBytes(size),
                     )
                     when (deviceMessage) {
-                        is DeviceMessage.Event -> nats.producer("$topicPrefix.$id.event") {
+                        is DeviceMessage.Event -> nats.producer("$topicPrefix.$id.events") {
                             send(
                                 headers = MapHeaders(mapOf("content-type" to listOf(messageContentType))),
                                 data = deviceMessage.data,
