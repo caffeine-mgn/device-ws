@@ -18,6 +18,7 @@ binom-io-core = { module = "pw.binom.io:core", version.ref = "binom-io" }
 binom-io-file = { module = "pw.binom.io:file", version.ref = "binom-io" }
 binom-io-date = { module = "pw.binom.io:date", version.ref = "binom-io" }
 binom-io-nats = { module = "pw.binom.io:nats", version.ref = "binom-io" }
+binom-io-s3-client = { module = "pw.binom.io:s3", version.ref = "binom-io" }
 binom-telegram = { module = "pw.binom:telegramClient", version.ref = "telegram" }
 binom-io-strong-webServer = { module = "pw.binom.io:strong-web-server", version.ref = "binom-io" }
 binom-io-strong-properties-yaml = { module = "pw.binom.io:strong-properties-yaml", version.ref = "binom-io" }

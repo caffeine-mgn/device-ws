@@ -6,4 +6,6 @@ object WsDevice {
     const val DEVICE_SECRET = "X-Client-Secrets"
     const val DEVICE_MESSAGING_CONTENT_TYPE = "X-Client-Messaging-Content-Type"
     const val BASE_CONTROL_URI = "/api/v1/devices/control"
+    const val UPLOAD_FILE_URI = "/api/v1/files"
+    const val LOAD_FILE_URI = "/api/v1/files/{name}"
 }
