@@ -19,3 +19,9 @@ deviceSecret: null
 topicPrefix: "device"
 pingInterval: "PT30S"
 pingTimeout: "PT10S"
+storage:
+  accessKey: null
+  secretKey: null
+  url: null
+  bucketName: null
+  regin: null

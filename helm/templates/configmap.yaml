@@ -18,3 +18,9 @@ data:
       topicPrefix: "{{$.Values.topicPrefix}}"
       pingInterval: {{$.Values.pingInterval}}
       pingTimeout: {{$.Values.pingTimeout}}
+      storage:
+        accessKey: "{{$.Values.storage.accessKey}}"
+        bucketName: "{{$.Values.storage.bucketName}}"
+        regin: "{{$.Values.storage.regin}}"
+        secretKey: "{{$.Values.storage.secretKey}}"
+        url: "{{$.Values.storage.url}}"
