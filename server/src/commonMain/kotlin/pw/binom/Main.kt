@@ -11,7 +11,7 @@ import kotlin.jvm.JvmName
 
 fun main(args: Array<String>) {
     StrongApplication.run(args) {
-        +DefaultConfig(properties)
+        +DefaultConfig(properties, networkManager)
         +NatsClientConfig.apply(properties)
         +WebConfig.apply(properties)
         +SerializationConfig.base()
