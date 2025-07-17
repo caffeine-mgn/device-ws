@@ -7,8 +7,11 @@ telegram = "1.0.0-SNAPSHOT"
 android = "8.9.2"
 compose-plugin = "1.8.0"
 binom-publish = "0.1.24"
+binom-tracing="1.0.0-SNAPSHOT"
 
 [libraries]
+binom-tracing-strong = { module = "pw.binom.tracing:strong", version.ref = "binom-tracing" }
+binom-tracing-zipkin = { module = "pw.binom.tracing:zipkin", version.ref = "binom-tracing" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }

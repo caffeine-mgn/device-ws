@@ -18,6 +18,7 @@ import pw.binom.strong.beanAsyncCloseable
 import pw.binom.strong.properties.StrongProperties
 import pw.binom.strong.serialization.providers.JsonProvider
 import pw.binom.strong.serialization.providers.ProtoBufProvider
+import pw.binom.traycing.strong.config.ZipkinConfig
 
 fun DefaultConfig(config: StrongProperties,networkManager: NetworkManager) = Strong.config {
     it.beanAsyncCloseable {
@@ -27,6 +28,7 @@ fun DefaultConfig(config: StrongProperties,networkManager: NetworkManager) = Str
             source = NativeNetChannelFactory(networkManager)
         )
     }
+    ZipkinConfig().apply(it)
     it.bean { DeviceControlWsController() }
     it.bean { DevicesControlService() }
     it.bean { IllegalArgumentExceptionHandlerChain() }

@@ -18,6 +18,7 @@ kotlin {
             api(libs.kotlinx.serialization.protobuf)
             api(libs.kotlinx.serialization.json)
             api(libs.binom.io.core)
+            api(libs.binom.tracing.zipkin)
         }
     }
 }

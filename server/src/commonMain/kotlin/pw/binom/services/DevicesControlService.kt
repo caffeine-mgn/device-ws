@@ -11,6 +11,7 @@ import pw.binom.network.NetworkManager
 import pw.binom.properties.ApplicationProperties
 import pw.binom.strong.inject
 import pw.binom.strong.properties.injectProperty
+import pw.binom.traycing.strong.ZipkinCollector
 
 class DevicesControlService {
     private val connections = HashMap<WebSocketConnection, DeviceControl>()
@@ -21,6 +22,7 @@ class DevicesControlService {
     private val deviceStatusEmitterService: DeviceStatusEmitterService by inject()
     private val nats: NatsMqConnection by inject()
     private val applicationProperties: ApplicationProperties by injectProperty()
+    private val zipkinCollector: ZipkinCollector by inject()
 
     val devices: List<DeviceControl>
         get() = lock.synchronize {
@@ -48,6 +50,7 @@ class DevicesControlService {
             topicPrefix = applicationProperties.topicPrefix,
             pingInterval = applicationProperties.pingInterval,
             pingTimeout = applicationProperties.pingTimeout,
+            zipkinCollector = zipkinCollector,
         )
         lock.synchronize {
             connections[connection] = deviceControl

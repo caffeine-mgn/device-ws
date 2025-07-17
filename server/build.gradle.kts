@@ -39,6 +39,7 @@ kotlin {
             implementation(libs.binom.io.strong.nats.client)
             implementation(libs.binom.io.signal)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.binom.tracing.strong)
         }
     }
 }

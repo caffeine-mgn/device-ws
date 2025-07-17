@@ -5,14 +5,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import pw.binom.concurrency.SpinLock
 import pw.binom.concurrency.synchronize
 import pw.binom.device.ws.dto.DeviceMessage
-import pw.binom.device.ws.dto.DeviceMessage.Pong
 import pw.binom.device.ws.dto.ServerMessage
 import pw.binom.io.http.websocket.MessageType
 import pw.binom.io.http.websocket.WebSocketClosedException
@@ -23,11 +20,10 @@ import pw.binom.logger.Logger
 import pw.binom.mq.MapHeaders
 import pw.binom.mq.nats.NatsMqConnection
 import pw.binom.network.NetworkManager
+import pw.binom.traycing.strong.ZipkinCollector
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
 class DeviceControl(
@@ -40,6 +36,7 @@ class DeviceControl(
     private val topicPrefix: String,
     private val pingInterval: Duration,
     private val pingTimeout: Duration,
+    private val zipkinCollector: ZipkinCollector,
 ) {
     private val logger = Logger.getLogger("Device $id")
     private var functions = emptyMap<String, String>()
@@ -144,9 +141,15 @@ class DeviceControl(
                             events = deviceMessage.events
                         }
 
-                        is Pong -> pingLock.synchronize {
+                        is DeviceMessage.Pong -> pingLock.synchronize {
                             pingWaiters.remove(deviceMessage.id)
                         }?.resume(Unit)
+
+                        is DeviceMessage.DeviceSpan -> {
+                            deviceMessage.spans.forEach { span ->
+                                zipkinCollector.handleSpan(span)
+                            }
+                        }
                     }
                 }
             }

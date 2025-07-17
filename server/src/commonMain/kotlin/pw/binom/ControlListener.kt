@@ -13,10 +13,14 @@ object ControlListener {
         val topic = nats.getOrCreateTopic(topicName)
         val consumer = topic.createConsumer { msg ->
             val id = msg.replyTo ?: return@createConsumer
+            val traceId = msg.headers["trace-id"]?.firstOrNull()
+            val spanId = msg.headers["span-id"]?.firstOrNull()
             incomeMessages(
                 ServerMessage.RPCRequest(
                     id = id,
                     data = msg.body,
+                    traceId = traceId,
+                    spanId = spanId,
                 )
             )
         }
