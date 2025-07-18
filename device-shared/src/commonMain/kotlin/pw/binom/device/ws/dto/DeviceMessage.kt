@@ -33,7 +33,21 @@ sealed interface DeviceMessage {
     data class Event(val data: ByteArray) : DeviceMessage
 
     @Serializable
+    @SerialName("span")
     data class DeviceSpan(val spans: List<Span>) : DeviceMessage
+
+    @Serializable
+    data class Log(
+        val message: String? = null,
+        val level: Int,
+        val traceId: String? = null,
+        val spanId: String? = null,
+        val exception: String? = null,
+    )
+
+    @Serializable
+    @SerialName("log")
+    data class DeviceLog(val spans: List<Log>) : DeviceMessage
 
     /**
      * Уведомление сервера о предоставляемых функциях и событиях
