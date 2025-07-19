@@ -16,10 +16,15 @@ import pw.binom.io.http.websocket.WebSocketClosedException
 import pw.binom.io.http.websocket.WebSocketConnection
 import pw.binom.io.readBytes
 import pw.binom.io.useAsync
+import pw.binom.logger.DEBUG
+import pw.binom.logger.INFO
 import pw.binom.logger.Logger
+import pw.binom.logger.SEVERE
+import pw.binom.logger.WARNING
 import pw.binom.mq.MapHeaders
 import pw.binom.mq.nats.NatsMqConnection
 import pw.binom.network.NetworkManager
+import pw.binom.tracing.zipkin.ZipkinTracing
 import pw.binom.traycing.strong.ZipkinCollector
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
@@ -150,6 +155,23 @@ class DeviceControl(
                                 zipkinCollector.handleSpan(span)
                             }
                         }
+
+                        is DeviceMessage.DeviceLog -> {
+                            deviceMessage.logs.forEach { log ->
+                                if (log.traceId != null) {
+                                    ZipkinTracing.startTracing(
+                                        traceId = log.traceId!!,
+                                        spanId = log.spanId,
+                                        spanCollector = {
+                                            zipkinCollector.handleSpan(it)
+                                        }) {
+                                        sendLog(log)
+                                    }
+                                } else {
+                                    sendLog(log)
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -161,5 +183,34 @@ class DeviceControl(
             connection.asyncCloseAnyway()
         }
     }
+
+    private suspend fun sendLog(log: DeviceMessage.Log) {
+        logger.log(
+            level = logLevel(log.level.toUInt()),
+            text = log.message,
+            trace = null,
+        )
+    }
+
+    private val levels = HashMap<UInt, Logger.Level>()
+    private val levelLog = SpinLock()
+
+    private fun logLevel(level: UInt) =
+        when (level) {
+            Logger.DEBUG.priority -> Logger.DEBUG
+            Logger.INFO.priority -> Logger.INFO
+            Logger.WARNING.priority -> Logger.WARNING
+            Logger.SEVERE.priority -> Logger.SEVERE
+            else -> levelLog.synchronize {
+                levels.getOrPut(level) {
+                    object : Logger.Level {
+                        override val name: String
+                            get() = "L$level"
+                        override val priority: UInt
+                            get() = level
+                    }
+                }
+            }
+        }
 }
 
