@@ -7,7 +7,7 @@ telegram = "1.0.0-SNAPSHOT"
 android = "8.9.2"
 compose-plugin = "1.8.0"
 binom-publish = "0.1.24"
-binom-tracing = "6"
+binom-tracing = "7"
 
 [libraries]
 binom-tracing-strong = { module = "pw.binom.tracing:strong", version.ref = "binom-tracing" }
