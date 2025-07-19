@@ -155,14 +155,13 @@ class DeviceControl(
                             pingWaiters.remove(deviceMessage.id)
                         }?.resume(Unit)
 
-                        is DeviceMessage.DeviceSpan -> deviceMessage.spans.forEach { span ->
-                            zipkinCollector.handleSpan(span)
-                        }
+                        is DeviceMessage.DeviceSpan -> zipkinCollector.handleSpan(deviceMessage.spans)
 
                         is DeviceMessage.DeviceLog -> deviceMessage.logs.forEach { log ->
-                            if (log.traceId != null) {
+                            val traceId = log.traceId
+                            if (traceId != null) {
                                 ZipkinTracing.startTracing(
-                                    traceId = log.traceId!!,
+                                    traceId = traceId,
                                     spanId = log.spanId,
                                     spanCollector = {
                                         zipkinCollector.handleSpan(it)
