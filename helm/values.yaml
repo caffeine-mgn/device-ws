@@ -25,3 +25,5 @@ storage:
   url: null
   bucketName: null
   regin: null
+zipkin:
+  url: null

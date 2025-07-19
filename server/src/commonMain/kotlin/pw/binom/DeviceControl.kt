@@ -43,7 +43,7 @@ class DeviceControl(
     private val pingTimeout: Duration,
     private val zipkinCollector: ZipkinCollector,
 ) {
-    private val logger = Logger.getLogger("Device $id")
+    private val logger = Logger.getLogger("Device $id $name")
     private var functions = emptyMap<String, String>()
     private var events = emptyMap<String, String>()
 
@@ -111,8 +111,13 @@ class DeviceControl(
                     )
                     when (deviceMessage) {
                         is DeviceMessage.Event -> nats.producer("$topicPrefix.$id.events") {
+                            val headers = buildMap {
+                                deviceMessage.traceId?.let { put("trace-id", listOf(it)) }
+                                deviceMessage.spanId?.let { put("span-id", listOf(it)) }
+                                put("content-type", listOf(messageContentType))
+                            }
                             send(
-                                headers = MapHeaders(mapOf("content-type" to listOf(messageContentType))),
+                                headers = MapHeaders(headers),
                                 data = deviceMessage.data,
                             )
                         }
@@ -150,26 +155,22 @@ class DeviceControl(
                             pingWaiters.remove(deviceMessage.id)
                         }?.resume(Unit)
 
-                        is DeviceMessage.DeviceSpan -> {
-                            deviceMessage.spans.forEach { span ->
-                                zipkinCollector.handleSpan(span)
-                            }
+                        is DeviceMessage.DeviceSpan -> deviceMessage.spans.forEach { span ->
+                            zipkinCollector.handleSpan(span)
                         }
 
-                        is DeviceMessage.DeviceLog -> {
-                            deviceMessage.logs.forEach { log ->
-                                if (log.traceId != null) {
-                                    ZipkinTracing.startTracing(
-                                        traceId = log.traceId!!,
-                                        spanId = log.spanId,
-                                        spanCollector = {
-                                            zipkinCollector.handleSpan(it)
-                                        }) {
-                                        sendLog(log)
-                                    }
-                                } else {
+                        is DeviceMessage.DeviceLog -> deviceMessage.logs.forEach { log ->
+                            if (log.traceId != null) {
+                                ZipkinTracing.startTracing(
+                                    traceId = log.traceId!!,
+                                    spanId = log.spanId,
+                                    spanCollector = {
+                                        zipkinCollector.handleSpan(it)
+                                    }) {
                                     sendLog(log)
                                 }
+                            } else {
+                                sendLog(log)
                             }
                         }
                     }

@@ -24,3 +24,7 @@ data:
         regin: "{{$.Values.storage.regin}}"
         secretKey: "{{$.Values.storage.secretKey}}"
         url: "{{$.Values.storage.url}}"
+    {{ if $.Values.zipkin.url }}
+      zipkin:
+        url: "{{$.Values.zipkin.url}}"
+    {{end}}
