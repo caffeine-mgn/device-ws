@@ -14,6 +14,7 @@ data class ApplicationProperties(
     val pingTimeout: Duration = 10.seconds,
     val storage: Storage,
 ) {
+
     @Serializable
     data class Storage(
         val accessKey: String,
