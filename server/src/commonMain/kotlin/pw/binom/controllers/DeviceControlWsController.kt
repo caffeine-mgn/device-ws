@@ -34,6 +34,7 @@ class DeviceControlWsController : HttpHandler {
                 exchange.requestHeaders.getSingleOrNull(WsDevice.DEVICE_SECRET) ?: missingHeader(WsDevice.DEVICE_SECRET)
 
             if (deviceSecret != applicationProperties.deviceSecret) {
+                logger.info("Income connection with invalid secret")
                 throw IllegalArgumentException("Invalid secret device key")
             }
         }

@@ -11,7 +11,9 @@ import pw.binom.strong.web.server.WebConfig
 import kotlin.jvm.JvmName
 
 fun main(args: Array<String>) {
-    Logger.global.handler = JsonLogger()
+    if (Environment.getEnv("KUBERNETES_SERVICE_HOST") != null) {
+        Logger.global.handler = JsonLogger()
+    }
     StrongApplication.run(args) {
         +DefaultConfig(properties, networkManager)
         +NatsClientConfig.apply(properties)

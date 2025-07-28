@@ -1,6 +1,6 @@
 package pw.binom.services
 
-import pw.binom.DeviceControl
+import pw.binom.DeviceControlWs
 import pw.binom.device.ws.dto.DeviceEvent
 import pw.binom.mq.MapHeaders
 import pw.binom.properties.ApplicationProperties
@@ -14,7 +14,7 @@ class DeviceStatusEmitterService : AbstractNatsProducer() {
     private val applicationProperties: ApplicationProperties by injectProperty()
     private val defaultMimeCode = "application/json"
 
-    suspend fun deviceOnline(control: DeviceControl) {
+    suspend fun deviceOnline(control: DeviceControlWs) {
         val data = serializationService.encode(
             mimeType = defaultMimeCode,
             DeviceEvent.serializer(),
@@ -26,7 +26,7 @@ class DeviceStatusEmitterService : AbstractNatsProducer() {
         producer.send(headers = MapHeaders(mapOf("content-type" to listOf(defaultMimeCode))), data = data)
     }
 
-    suspend fun deviceOffline(control: DeviceControl) {
+    suspend fun deviceOffline(control: DeviceControlWs) {
         val data = serializationService.encode(
             mimeType = defaultMimeCode,
             DeviceEvent.serializer(),

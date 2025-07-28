@@ -1,8 +1,10 @@
 package pw.binom.services
 
-import pw.binom.DeviceControl
+import kotlinx.coroutines.channels.Channel
+import pw.binom.DeviceControlWs
 import pw.binom.concurrency.ReentrantLock
 import pw.binom.concurrency.synchronize
+import pw.binom.device.ws.dto.ServerMessage
 import pw.binom.io.http.websocket.WebSocketConnection
 import pw.binom.logger.Logger
 import pw.binom.logger.info
@@ -14,8 +16,8 @@ import pw.binom.strong.properties.injectProperty
 import pw.binom.traycing.strong.ZipkinCollector
 
 class DevicesControlService {
-    private val connections = HashMap<WebSocketConnection, DeviceControl>()
-    private val connectionsById = HashMap<String, DeviceControl>()
+    private val connections = HashMap<WebSocketConnection, DeviceControlWs>()
+    private val connectionsById = HashMap<String, DeviceControlWs>()
     private val lock = ReentrantLock()
     private val logger by Logger.ofThisOrGlobal
     private val networkManager: NetworkManager by inject()
@@ -24,7 +26,7 @@ class DevicesControlService {
     private val applicationProperties: ApplicationProperties by injectProperty()
     private val zipkinCollector: ZipkinCollector by inject()
 
-    val devices: List<DeviceControl>
+    val devices: List<DeviceControlWs>
         get() = lock.synchronize {
             ArrayList(connections.values)
         }
@@ -40,7 +42,7 @@ class DevicesControlService {
         messageContentType: String,
     ) {
         logger.info("Connected $deviceId:$deviceName")
-        val deviceControl = DeviceControl(
+        val deviceControl = DeviceControlWs(
             id = deviceId,
             name = deviceName,
             connection = connection,

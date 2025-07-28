@@ -7,6 +7,7 @@ import pw.binom.controllers.UploadController
 import pw.binom.http.client.HttpClientRunnable
 import pw.binom.http.client.factory.Https11ConnectionFactory
 import pw.binom.http.client.factory.NativeNetChannelFactory
+import pw.binom.listeners.DeviceRpcListener
 import pw.binom.network.NetworkManager
 import pw.binom.services.DeviceStatusEmitterService
 import pw.binom.services.DevicesControlService
@@ -31,6 +32,7 @@ fun DefaultConfig(config: StrongProperties,networkManager: NetworkManager) = Str
     ZipkinConfig().apply(it)
     it.bean { DeviceControlWsController() }
     it.bean { DevicesControlService() }
+    it.bean { DeviceRpcListener() }
     it.bean { IllegalArgumentExceptionHandlerChain() }
     it.bean { JsonProvider() }
     it.bean { ProtoBufProvider() }
