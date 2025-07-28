@@ -41,9 +41,9 @@ class DeviceRpcListener : AbstractNatsConsumer() {
 
         val traceId = message.headers["trace-id"]?.firstOrNull()
         val spanId = message.headers["span-id"]?.firstOrNull()
-        logger.info("Searching device....")
+        logger.info("Searching device \"$deviceId\"...")
         val device = devicesControlService.findById(deviceId)
-        logger.info("Device found!!!")
+        logger.info("Device \"${deviceId}\" found!!!")
         if (device == null) {
             connection1.producer(id) {
                 send(
