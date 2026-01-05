@@ -203,6 +203,11 @@ class DeviceControlWs(
                             deviceMessage.data.forEach {
                                 try {
                                     val dto = when (it) {
+                                        is DeviceMessage.Telemetry.RingChanging -> TelemetryEvent.RingChanging(
+                                            value = it.value,
+                                            date = it.date,
+                                        )
+
                                         is DeviceMessage.Telemetry.Steps -> TelemetryEvent.Steps(
                                             steps = it.steps,
                                             calorie = it.calorie,

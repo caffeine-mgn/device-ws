@@ -18,6 +18,14 @@ sealed interface TelemetryEvent {
     ) : TelemetryEvent
 
     @Serializable
+    @SerialName("ring_changing")
+    data class RingChanging(
+        val value: Byte,
+        @Serializable(DateTimeSecondsSerializer::class)
+        val date: DateTime,
+    ): TelemetryEvent
+
+    @Serializable
     @SerialName("unknown")
     data class Unknown(
         val cmd: Int,
