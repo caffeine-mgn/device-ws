@@ -10,6 +10,7 @@ plugins {
 kotlin {
     allTargets{
         -"wasmJs"
+        -"js"
     }
     wasmJs()
     sourceSets {
