@@ -12,12 +12,17 @@ jobs:
       - name: Building
         uses: https://git.binom.pw/subochev/devops/build-gradle@main
         with:
-          image_name: "device/ws"
-          tag: ${{ gitea.ref_name }}
+          target: shadowJar
       - name: Publishing Gradle
         uses: https://git.binom.pw/subochev/devops/publish@main
         with:
           version: ${{ gitea.ref_name }}
+      - name: Build Docker Image
+        uses: https://git.binom.pw/subochev/devops/build-docker@main
+        with:
+          image_name: "device/ws"
+          tags: latest ${{ gitea.ref_name }}
+          context: './server'
       - name: Publishing Helm
         uses: https://git.binom.pw/subochev/devops/helm-publish@main
         with:
