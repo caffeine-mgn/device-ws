@@ -1,10 +1,10 @@
 import pw.binom.publish.allTargets
 
 plugins {
+    id("maven-publish")
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.binom.publish)
-    id("maven-publish")
 }
 
 kotlin {
