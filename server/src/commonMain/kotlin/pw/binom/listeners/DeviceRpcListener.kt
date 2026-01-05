@@ -1,27 +1,22 @@
 package pw.binom.listeners
 
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.supervisorScope
-import kotlinx.coroutines.withTimeout
 import pw.binom.device.ws.dto.ServerMessage
-import pw.binom.io.useAsync
 import pw.binom.logger.Logger
 import pw.binom.logger.info
 import pw.binom.logger.warn
-import pw.binom.mq.MapHeaders
-import pw.binom.mq.nats.NatsMqConnection
+import pw.binom.mq.nats.client.BytesParsedHeaders
 import pw.binom.mq.nats.client.NatsMessage
-import pw.binom.producer
+import pw.binom.mq.nats.client.ReconnactableConnect
 import pw.binom.properties.ApplicationProperties
 import pw.binom.services.DevicesControlService
 import pw.binom.strong.inject
 import pw.binom.strong.nats.client.AbstractNatsConsumer
 import pw.binom.strong.nats.client.NatsConsumerProperties
 import pw.binom.strong.properties.injectProperty
-import kotlin.time.Duration.Companion.seconds
 
 class DeviceRpcListener : AbstractNatsConsumer() {
-    private val connection1: NatsMqConnection by inject()
+    private val connection1: ReconnactableConnect by inject()
     private val applicationProperties: ApplicationProperties by injectProperty()
     private val devicesControlService: DevicesControlService by inject()
     private val logger by Logger.ofThisOrGlobal
@@ -45,17 +40,16 @@ class DeviceRpcListener : AbstractNatsConsumer() {
         val device = devicesControlService.findById(deviceId)
         logger.info("Device \"${deviceId}\" found!!!")
         if (device == null) {
-            connection1.producer(id) {
-                send(
-                    MapHeaders(
-                        mapOf(
-                            "content-type" to listOf("text/plain"),
-                            "status" to listOf("error"),
-                        )
-                    ),
-                    "Device not connected".encodeToByteArray()
-                )
-            }
+            connection1.send(
+                subject = id,
+                BytesParsedHeaders(
+                    mapOf(
+                        "content-type" to listOf("text/plain"),
+                        "status" to listOf("error"),
+                    )
+                ).toHeadersBody(),
+                data = "Device not connected".encodeToByteArray(),
+            )
         } else {
             val msg = ServerMessage.RPCRequest(
                 id = id,

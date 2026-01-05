@@ -9,6 +9,7 @@ import pw.binom.io.http.websocket.WebSocketConnection
 import pw.binom.logger.Logger
 import pw.binom.logger.info
 import pw.binom.mq.nats.NatsMqConnection
+import pw.binom.mq.nats.client.ReconnactableConnect
 import pw.binom.network.NetworkManager
 import pw.binom.properties.ApplicationProperties
 import pw.binom.strong.inject
@@ -22,7 +23,7 @@ class DevicesControlService {
     private val logger by Logger.ofThisOrGlobal
     private val networkManager: NetworkManager by inject()
     private val deviceStatusEmitterService: DeviceStatusEmitterService by inject()
-    private val nats: NatsMqConnection by inject()
+    private val nats: ReconnactableConnect by inject()
     private val applicationProperties: ApplicationProperties by injectProperty()
     private val zipkinCollector: ZipkinCollector by inject()
 

@@ -7,11 +7,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import pw.binom.concurrency.SpinLock
 import pw.binom.concurrency.synchronize
 import pw.binom.device.ws.dto.DeviceMessage
 import pw.binom.device.ws.dto.ServerMessage
+import pw.binom.device.ws.dto.TelemetryEvent
 import pw.binom.io.http.websocket.MessageType
 import pw.binom.io.http.websocket.WebSocketClosedException
 import pw.binom.io.http.websocket.WebSocketConnection
@@ -26,6 +28,8 @@ import pw.binom.logger.info
 import pw.binom.logger.warn
 import pw.binom.mq.MapHeaders
 import pw.binom.mq.nats.NatsMqConnection
+import pw.binom.mq.nats.client.BytesParsedHeaders
+import pw.binom.mq.nats.client.ReconnactableConnect
 import pw.binom.network.NetworkManager
 import pw.binom.tracing.zipkin.ZipkinTracing
 import pw.binom.traycing.strong.ZipkinCollector
@@ -40,7 +44,7 @@ class DeviceControlWs(
     val name: String,
     private val connection: WebSocketConnection,
     private val networkManager: NetworkManager,
-    private val nats: NatsMqConnection,
+    private val nats: ReconnactableConnect,
     private val messageContentType: String,
     private val topicPrefix: String,
     private val pingInterval: Duration,
@@ -122,29 +126,31 @@ class DeviceControlWs(
                     )
                     logger.info("Got device message $deviceMessage")
                     when (deviceMessage) {
-                        is DeviceMessage.Event -> nats.producer("$topicPrefix.$id.events") {
+                        is DeviceMessage.Event -> {
                             val headers = buildMap {
                                 deviceMessage.traceId?.let { put("trace-id", listOf(it)) }
                                 deviceMessage.spanId?.let { put("span-id", listOf(it)) }
                                 put("content-type", listOf(messageContentType))
                             }
-                            send(
-                                headers = MapHeaders(headers),
+                            nats.send(
+                                subject = "$topicPrefix.$id.events",
+                                headers = BytesParsedHeaders(headers).toHeadersBody(),
                                 data = deviceMessage.data,
                             )
                         }
 
-                        is DeviceMessage.RPCResponse -> nats.producer(deviceMessage.id) {
+                        is DeviceMessage.RPCResponse -> {
                             logger.info("rpc-${deviceMessage.data.decodeToString()}")
                             try {
                                 println("Sending response")
-                                send(
-                                    headers = MapHeaders(
+                                nats.send(
+                                    subject = deviceMessage.id,
+                                    headers = BytesParsedHeaders(
                                         mapOf(
                                             "content-type" to listOf(messageContentType),
                                             "status" to listOf("ok"),
                                         )
-                                    ),
+                                    ).toHeadersBody(),
                                     data = deviceMessage.data,
                                 )
                                 println("Response sent success")
@@ -153,14 +159,15 @@ class DeviceControlWs(
                             }
                         }
 
-                        is DeviceMessage.RPCResponseError -> nats.producer(deviceMessage.id) {
-                            send(
-                                headers = MapHeaders(
+                        is DeviceMessage.RPCResponseError -> {
+                            nats.send(
+                                subject = deviceMessage.id,
+                                headers = BytesParsedHeaders(
                                     mapOf(
                                         "content-type" to listOf("text/plain"),
                                         "status" to listOf("error"),
                                     )
-                                ),
+                                ).toHeadersBody(),
                                 data = deviceMessage.message.encodeToByteArray(),
                             )
                         }
@@ -189,6 +196,39 @@ class DeviceControlWs(
                                 }
                             } else {
                                 sendLog(log)
+                            }
+                        }
+
+                        is DeviceMessage.TelemetryMessage -> {
+                            deviceMessage.data.forEach {
+                                try {
+                                    val dto = when (it) {
+                                        is DeviceMessage.Telemetry.Steps -> TelemetryEvent.Steps(
+                                            steps = it.steps,
+                                            calorie = it.calorie,
+                                            distance = it.calorie,
+                                            date = it.date,
+                                        )
+
+                                        is DeviceMessage.Telemetry.Unknown -> TelemetryEvent.Unknown(
+                                            date = it.date,
+                                            cmd = it.cmd,
+                                            data = it.data,
+                                        )
+                                    }
+                                    nats.send(
+                                        subject = "$topicPrefix.$id.telemetry",
+                                        headers = BytesParsedHeaders(
+                                            mapOf(
+                                                "content-type" to listOf("application/json"),
+                                            )
+                                        ).toHeadersBody(),
+                                        data = Json.encodeToString(TelemetryEvent.serializer(), dto)
+                                            .encodeToByteArray(),
+                                    )
+                                } catch (e: Throwable) {
+                                    logger.warn(exception = e, text = "Can't send Telemetry")
+                                }
                             }
                         }
                     }

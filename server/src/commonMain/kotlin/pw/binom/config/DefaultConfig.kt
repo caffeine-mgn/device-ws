@@ -23,10 +23,11 @@ import pw.binom.traycing.strong.config.ZipkinConfig
 
 fun DefaultConfig(config: StrongProperties,networkManager: NetworkManager) = Strong.config {
     it.beanAsyncCloseable {
-        HttpClientRunnable(
-            idleCoroutineContext = networkManager,
-            factory = Https11ConnectionFactory(),
-            source = NativeNetChannelFactory(networkManager)
+        HttpClientRunnable.create(
+            networkManager = networkManager,
+//            idleCoroutineContext = networkManager,
+//            factory = Https11ConnectionFactory(),
+//            source = NativeNetChannelFactory(networkManager)
         )
     }
     ZipkinConfig().apply(it)

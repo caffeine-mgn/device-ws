@@ -1,6 +1,7 @@
 package pw.binom.services
 
 import pw.binom.http.client.HttpClientRunnable
+import pw.binom.http.client.HttpClientRunnableExchange
 import pw.binom.io.AsyncOutput
 import pw.binom.io.http.range.Range
 import pw.binom.properties.ApplicationProperties
@@ -13,7 +14,7 @@ import pw.binom.url.toURL
 
 class StrongS3Client : S3Client {
 
-    private val clientRunnable: HttpClientRunnable by inject()
+    private val clientRunnable: HttpClientRunnable<HttpClientRunnableExchange> by inject()
     private val applicationProperties: ApplicationProperties by injectProperty()
 
     private var client: S3Client? = null
